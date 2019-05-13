@@ -1,51 +1,62 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
-import gui.util.Alerts;
-import gui.util.Constraints;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.util.Callback;
+import model.entities.Person;
 
-public class ViewController implements Initializable{
+public class ViewController implements Initializable {
 
+	//Create a variable that reference a combo box
 	@FXML
-	private TextField textNumber1;
+	private ComboBox<Person> comboBox;
 
+	//Create a variable of the type ObservableList to receive the values of Person.
+	private ObservableList<Person> obsList;
+	
+	//Method to print the values on the ComboBox.
 	@FXML
-	private TextField textNumber2;
-
-	@FXML
-	private Label result;
-
-	@FXML
-	private Button Sum;
-
-	public void onTestAction() {
-		try {
-			double num1 = Double.parseDouble(textNumber1.getText());
-			double num2 = Double.parseDouble(textNumber2.getText());
-			double sum = num1 + num2;
-			result.setText(String.format("%.2f", sum));
-			
-		}
-		catch(NumberFormatException e){
-		
-		Alerts.showAlert("Teste", null, e.getMessage(), AlertType.ERROR);
-		}
+	public void onComboAction() {
+		Person person = comboBox.getSelectionModel().getSelectedItem();
+		System.out.println(person);
 	}
 
+	//method to initialize the ComboBox
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		Constraints.setTextFieldInteger(textNumber1);
-		Constraints.setTextFieldInteger(textNumber2);
+		//instantiated a list of Person.
+		List<Person> list = new ArrayList<>();
+		//added values in the list.
+		list.add(new Person(1, "Ike", "Ike@gmail.com"));
+		list.add(new Person(1, "Marth", "Marthe@gmail.com"));
+		list.add(new Person(1, "Roy", "Roy@gmail.com"));
+    
+		//Load the itens in the list
+		obsList = FXCollections.observableArrayList(list);
+		//Set the itens that be showed in ComboBox
+		comboBox.setItems(obsList);
+
+		//Create a list factory and a lamba function to return only the name in the ComboBox
+		Callback<ListView<Person>, ListCell<Person>> factory = lv -> new ListCell<Person>() {
+			protected void updateItem(Person item, boolean empty) {
+				super.updateItem(item, empty);
+				setText(empty ? "" : item.getName());
+			}
+		};
 		
-		
+		comboBox.setCellFactory(factory);
+		comboBox.setButtonCell(factory.call(null));
+
 	}
-	
+
 }
